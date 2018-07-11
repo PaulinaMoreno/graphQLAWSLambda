@@ -1,79 +1,81 @@
+import boto3
+import os
+import json
 import sys
-sys.path.append(".") 
-user_data = []
-friendShip_data = []
+from botocore.exceptions import ClientError
+from botocore.errorfactory import BaseClientExceptions
+from os.path import dirname, join
 
 
-def setup():
-    
-    from schema import User, FriendShip
-    global user_data
-    global friendShip_data
-    luke = User(
-        userID="1000",
-        name="Luke Skywalker",
-        email="lukeskywalker@gmail.com",
-        phone="+4084665573",
-        friends=[],
-    
-    )
+class DynamoDB:
+    def __init__(self):
+        self.connection = boto3.resource('dynamodb', region_name='us-west-2')
 
-    vader = User(
-        userID="1001",
-        name="Darth Vader",
-        email="darkvader@gmail.com",
-        phone="+4084687956",
-        friends=[],
-    )
+    def buildExpression(self, data):
+        vals = {}
+        exp = 'SET '
+        attr_names = {}
+        for key, value in data.items():
+            vals[':{}'.format(key)] = value
+            attr_names['{}'.format(key)] = key
+            exp += '{} = :{},'.format(key, key)
+        exp = exp.rstrip(",")
+        return vals, exp
 
-    han = User(
-        userID="1002",
-        name="Han Solo",
-        email="hansolito@gmail.com",
-        phone="+4084689120",
-        friends=[],
-    )
+    def put_item(self,Table, Item, ConditionExpression ):
+        try:
+            table = self.connection.Table(Table)
+            response_user_to_friend = table.put_item(
+                Item,
+                ConditionExpression
+            )
+            return response_user_to_friend
+        except ClientError as e:
+            raise e
+    def delete_Items(self, Table, l_items, keyID_pr, KeyID_sec):
+        try:
+            table = self.connection.Table(Table)
+            with table.batch_writer() as batch:
+                for item in l_items:
+                    print(item)
+                    batch.delete_item(
+                        Key={
+                                keyID_pr: item[keyID_pr],
+                                KeyID_sec: item[KeyID_sec]
+                            }
+                        )
+                    print(batch)
+            return True
+        except ClientError as e:
+            raise e
 
-    leia = User(
-        userID="1003",
-        name="Leia Organa",
-        email="leiaorg@gmail.com",
-        phone="+4086884546",
-        friends=[],
-    )
+    def update(self, table, keyID, keyValue, dataParamethers):
+        table = self.connection.Table(table)
+        vals, update_expression = self.buildExpression(dataParamethers)
+        try:
+            ExpressionAttributeValues = vals,
+            UpdateExpression = update_expression
 
-    luke.friends.append(leia)
-    luke.friends.append(han)
-
-    han.friends.append(leia)
-    han.friends.append(luke)
-
-    leia.friends.append(luke)
-    leia.friends.append(han)
-
-    user_data.append(leia)
-    user_data.append(han)
-    user_data.append(vader)
-    user_data.append(luke)
-
-
-def set_friendship_value(f):
-    print (f.userID)
-    friendShip_data.append(f)
-def delete_friendship_value(u):
-    for f in friendShip_data:
-        if f.userID == u.userID and f.friendID == u.friendID:
-            friendShip_data.remove(f)
-def get_friendship_value():
-    for f in friendShip_data:
-        print(f.userID, f.friendID)
-def get_user(userID):
-    for user in user_data:
-        if user.userID == userID:
-            return user
-def get_all_users():
-    return user_data
-
-def get_friends(user):
-    return map(get_user, user.friends)
+            result = table.update_item(
+                Key={
+                    keyID: keyValue
+                },
+                ExpressionAttributeValues=vals,
+                UpdateExpression=update_expression,
+                ReturnValues='ALL_NEW',
+        )
+            responseJson = {
+                "statusCode": 200,
+                "headers": {"Content-Type": 'application/json'},
+                "body": 'Update user on dynamodb'
+            }
+            return responseJson
+        except Exception as err:
+            responseJson = {
+                "statusCode": 400,
+                "headers": {"Content-Type": 'application/json'},
+                "body": str(err)
+            }
+            print(err)
+            return responseJson
 
