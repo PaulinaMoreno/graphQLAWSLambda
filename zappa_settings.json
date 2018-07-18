@@ -1,0 +1,13 @@
+{
+    "dev": {
+        "app_function": "runapp.app",
+        "aws_region": "us-west-2",
+        "profile_name": "default",
+        "project_name": "grapheneexample",
+        "runtime": "python3.6",
+        "s3_bucket": "zappa-graphene-dev-us-west-2",
+        "manage_roles": false, // Disable Zappa client managing roles.
+        "role_name": "demo_doppel_zappa_role", // Name of your Zappa execution role. Optional, default: <project_name>-<env>-ZappaExecutionRole.
+        "role_arn": "arn:aws:xxx:xxx/demo_doppel_zappa_role" // ARN of your Zappa execution role. Optional.
+
+    }
