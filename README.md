@@ -1,3 +1,3 @@
 
-### Graphql as a Lambda fuction demo
+### Graphql as a AWS Lambda function demo
 
