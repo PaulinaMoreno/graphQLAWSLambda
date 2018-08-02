@@ -28,7 +28,7 @@ This project has been developed on **MacOs** with **Python 3.6**. It is using th
         }
         `
   Result:
-  
+  ![query result](https://github.com/PaulinaMoreno/graphQLAWSLambda/blob/master/query.png)
 # AWS Lambda + Zappa
 
 ## Installation and Configuration
