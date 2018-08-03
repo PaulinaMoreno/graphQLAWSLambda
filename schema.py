@@ -1,31 +1,22 @@
 import graphene
 import sys
-import requests
 sys.path.append(".") 
-from requests_aws_sign import AWSV4Sign
-from boto3 import session
-from resolvers import Resolver
-
+from data import setup, get_all_users , set_friendship_value, delete_friendship_value, get_friendship_value
+setup()
 class User(graphene.ObjectType):
     userID = graphene.String()
-    #name = graphene.String()
+    name = graphene.String()
     email = graphene.String()
     phone = graphene.String()
-    userCreateDate = graphene.DateTime()
-    userStatus = graphene.String()
-    enabled = graphene.Boolean()
-    # friends = graphene.List(lambda: User)
-    
+    friends = graphene.List(lambda: User)
 
-    # def resolve_friends(self, info):
-    #     return userID
-              
+    def resolve_friends(self, info):
+        return get_friendship_value(self.friends)
 
 class FriendShip(graphene.ObjectType):
     userID = graphene.String()
     friendID = graphene.String()
 
-# Used to Create new friendship
 class createFriendRelation(graphene.Mutation):
     class Arguments:
         userID = graphene.String()
@@ -55,12 +46,11 @@ class deleteFriendRelation(graphene.Mutation):
 
 class Query(graphene.ObjectType):
     user = graphene.Field(User, userID=graphene.String())
-    userFriends = graphene.List(User)
-
+    allUsers = graphene.List(User)
     def resolve_user(self, info, userID):
-        return Resolver.get_user(userID)
-    def resolve_userFriends(self, info, userID):
-        return Resolver.get_all_users_friends(userID)
+        return get_user(userID)
+    def resolve_allUsers(self, info):
+        return get_all_users()
 
 class MyMutations(graphene.ObjectType):
     create_friend_relation = createFriendRelation.Field()
@@ -68,3 +58,4 @@ class MyMutations(graphene.ObjectType):
 
 
 schema = graphene.Schema(query=Query, mutation=MyMutations)
+
