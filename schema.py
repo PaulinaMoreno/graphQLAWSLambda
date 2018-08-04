@@ -1,8 +1,8 @@
 import graphene
 import sys
-sys.path.append(".") 
-from data import setup, get_all_users , set_friendship_value, delete_friendship_value, get_friendship_value
-setup()
+
+from data import get_all_users, set_friendship_value, get_friendship
+
 class User(graphene.ObjectType):
     userID = graphene.String()
     name = graphene.String()
@@ -58,4 +58,3 @@ class MyMutations(graphene.ObjectType):
 
 
 schema = graphene.Schema(query=Query, mutation=MyMutations)
-

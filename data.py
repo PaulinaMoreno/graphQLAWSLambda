@@ -1,16 +1,16 @@
-
 import sys
 import json
 import requests
 from requests_aws_sign import AWSV4Sign
 from boto3 import session
 sys.path.append(".") 
+from schema import User
+
 user_data = []
 friendShip_data = []
 
 def setup():
     
-    from schema import User, FriendShip
     global user_data
 
     user01 = User(
@@ -60,14 +60,9 @@ def setup():
     user_data.append(user03)
     user_data.append(user04)
 
+def set_friendship_value(u,f):
+    u.friends.append(f)
 
-def set_friendship_value(f):
-    print (f.userID)
-    friendShip_data.append(f)
-def delete_friendship_value(u):
-    for f in friendShip_data:
-        if f.userID == u.userID and f.friendID == u.friendID:
-            friendShip_data.remove(f)
 def get_friendship(friends):
     for f in friends:
         print(f.userID)
