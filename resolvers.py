@@ -33,4 +33,10 @@ class Resolver():
         return json.loads(data, object_hook=self._json_object_hook)
 
 
-
+    def get_all_users_friends(self, userID):
+        GET_ALL_FRIENDS_USER_URL = BASE_API_ENDPOINT_USERS+'/users/'+userID+'/friends'
+        print(GET_ALL_FRIENDS_USER_URL)
+        resp = requests.get(url=GET_ALL_FRIENDS_USER_URL)
+        response = self.json2obj(resp.content.decode("utf-8"))
+        print(response)
+        return response
