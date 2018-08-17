@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "app_function": "runapp.app",
+        "aws_region": "us-west-2",
+        "profile_name": "default",
+        "project_name": "graphqlawslambd",
+        "runtime": "python3.6",
+        "s3_bucket": "zappa-k5ox7h0nm"
+    }
+}
